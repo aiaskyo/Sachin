@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KRATIVAN VALEROX - Smart Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-dark: #0f172a;
+            --primary-light: #3b82f6;
+            --accent: #06b6d4;
+            --bg: #f1f5f9;
+            --surface: #ffffff;
+            --text: #0f172a;
+            --muted: #64748b;
+            --border: #e2e8f0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; }
+        body {
+            background: radial-gradient(circle at top left, #e0f2fe 0%, var(--bg) 45%);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            background: linear-gradient(120deg, var(--primary-dark), #16213e 60%, var(--primary));
+            color: #ffffff;
+            padding: 16px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 6px 18px rgba(15,23,42,0.25);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo { font-family: 'Poppins', sans-serif; font-size: 22px; font-weight: 800; letter-spacing: 0.5px; }
+        .logo span { color: #38bdf8; }
+        .nav-tabs { display: flex; gap: 8px; background: rgba(255,255,255,0.06); padding: 6px; border-radius: 999px; }
+        .tab-btn {
+            background: transparent; border: none; color: #94a3b8;
+            padding: 9px 18px; font-size: 14px; font-weight: 600;
+            cursor: pointer; border-radius: 999px; transition: all 0.2s ease;
+        }
+        .tab-btn.active, .tab-btn:hover { color: #ffffff; background: var(--primary-light); }
+        .container { flex: 1; max-width: 620px; width: 90%; margin: 40px auto; }
+        .view-panel {
+            background: var(--surface);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 32px;
+            box-shadow: 0 15px 35px rgba(15,23,42,0.08);
+            display: none;
+            animation: fadeIn 0.35s ease;
+        }
+        .view-panel.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        h2 { font-family: 'Poppins', sans-serif; font-size: 23px; margin-bottom: 4px; color: var(--primary-dark); }
+        .sub { color: var(--muted); font-size: 13px; margin-bottom: 26px; }
+        .form-group { margin-bottom: 16px; }
+        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #334155; }
+        .form-control {
+            width: 100%; padding: 11px 14px; border: 1px solid var(--border);
+            border-radius: 8px; font-size: 14px; outline: none;
+            background: var(--surface); color: var(--text); transition: border-color 0.2s ease;
+        }
+        .form-control:focus { border-color: var(--primary-light); }
+        .form-control:readonly { background: #f1f5f9; color: #475569; cursor: not-allowed; }
+        .btn {
+            width: 100%; padding: 13px; background: linear-gradient(120deg, var(--primary), var(--primary-light));
+            color: #ffffff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600;
+            cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease;
+            box-shadow: 0 6px 14px rgba(30,58,138,0.25);
+        }
+        .btn:hover:not(:disabled) { transform: translateY(-1px); }
+        .btn:disabled { background: #cbd5e1; cursor: not-allowed; box-shadow: none; }
+        .loader { display: none; text-align: center; margin-top: 15px; font-weight: 600; color: var(--primary); font-size: 14px; }
+        #toast {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: #334155; color: #fff; padding: 12px 24px; border-radius: 8px;
+            font-size: 14px; display: none; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .auto-badge {
+            display: inline-block; background: #e0f2fe; color: #0369a1;
+            padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-left: 8px;
+        }
+
+        /* ---------- MOBILE RESPONSIVE ---------- */
+        @media (max-width: 640px) {
+            header { padding: 12px 14px; gap: 10px; flex-wrap: wrap; justify-content: center; text-align: center; }
+            .logo { font-size: 18px; }
+            .nav-tabs { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; justify-content: flex-start; scrollbar-width: none; }
+            .nav-tabs::-webkit-scrollbar { display: none; }
+            .tab-btn { flex: 0 0 auto; white-space: nowrap; padding: 9px 14px; font-size: 13px; }
+            .container { width: 94%; margin: 20px auto; max-width: 100%; }
+            .view-panel { padding: 20px 16px; border-radius: 14px; }
+            h2 { font-size: 19px; }
+            .sub { margin-bottom: 20px; font-size: 12.5px; }
+            .form-group { margin-bottom: 14px; }
+            .form-control, select.form-control, input[type="time"].form-control { font-size: 16px; padding: 12px 14px; }
+            .btn { padding: 14px; font-size: 15px; }
+            #toast { width: 92%; max-width: 360px; bottom: 14px; font-size: 13px; text-align: center; padding: 12px 18px; }
+        }
+        @media (max-width: 380px) {
+            .date-day-row { flex-direction: column; gap: 10px !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">KRATIVAN <span>VALEROX</span></div>
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('home')">🏠 Home</button>
+            <button class="tab-btn" onclick="switchTab('attendance')">🕒 Attendance</button>
+            <button class="tab-btn" onclick="switchTab('leaves')">🍃 Leaves</button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- HOME PANEL -->
+        <div id="panel-home" class="view-panel active">
+            <h2>System Control Panel</h2>
+            <p class="sub">Corporate Matrix Hub</p>
+            <div style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 15px; border-radius: 6px;">
+                <p style="color: #1e40af; font-size: 14px;" id="sync-status">🔄 Cloud database se connect ho rha hai... Please wait.</p>
+            </div>
+        </div>
+
+        <!-- ATTENDANCE PANEL -->
+        <div id="panel-attendance" class="view-panel">
+            <h2>Mark Attendance</h2>
+            <p class="sub">ID enter karke details auto-fetch karein</p>
+            <form id="attendance-form" onsubmit="submitDataJSONP(event, 'markAttendance')">
+                <div class="form-group">
+                    <label>Employee ID</label>
+                    <input type="text" name="EmployeeID" class="form-control" placeholder="ID dalein (Ex: EV-01) aur bahar click karein" onchange="autoFillEmployeeData(this, 'attendance')" required>
+                </div>
+                <div class="form-group">
+                    <label>Employee Name <span class="auto-badge">Auto</span></label>
+                    <input type="text" name="Name" id="att-name" class="form-control" readonly required>
+                </div>
+                <div class="form-group">
+                    <label>Department <span class="auto-badge">Auto</span></label>
+                    <input type="text" name="Department" id="att-dept" class="form-control" readonly required>
+                </div>
+                <div class="form-group">
+                    <label>Designation <span class="auto-badge">Auto</span></label>
+                    <input type="text" name="Designation" id="att-desig" class="form-control" readonly required>
+                </div>
+                <div class="form-group">
+                    <label>Today Date & Day <span class="auto-badge">Auto</span></label>
+                    <div class="date-day-row" style="display: flex; gap: 10px;">
+                        <input type="text" name="Date" id="att-date" class="form-control" readonly required>
+                        <input type="text" name="Day" id="att-day" class="form-control" readonly required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select name="Status" class="form-control">
+                        <option value="Present">Present</option>
+                        <option value="Absent">Absent</option>
+                        <option value="Half Day">Half Day</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Check-In Time</label>
+                    <input type="time" name="CheckIn" class="form-control" value="09:00">
+                </div>
+                <button type="submit" class="btn" id="btn-att-submit" disabled>Submit Attendance Log</button>
+                <div class="loader" id="loader-att">Data sheet me save ho rha hai...</div>
+            </form>
+        </div>
+
+        <!-- LEAVES PANEL -->
+        <div id="panel-leaves" class="view-panel">
+            <h2>Apply For Leave</h2>
+            <p class="sub">Chutti apply karne ka dynamic form</p>
+            <form id="leaves-form" onsubmit="submitDataJSONP(event, 'applyLeave')">
+                <div class="form-group">
+                    <label>Employee ID</label>
+                    <input type="text" name="EmployeeID" class="form-control" placeholder="ID dalein (Ex: EV-01) aur bahar click karein" onchange="autoFillEmployeeData(this, 'leaves')" required>
+                </div>
+                <div class="form-group">
+                    <label>Employee Name <span class="auto-badge">Auto</span></label>
+                    <input type="text" name="Name" id="lea-name" class="form-control" readonly required>
+                </div>
+                <div class="form-group">
+                    <label>Department <span class="auto-badge">Auto</span></label>
+                    <input type="text" name="Department" id="lea-dept" class="form-control" readonly required>
+                </div>
+                <div class="form-group">
+                    <label>Designation <span class="auto-badge">Auto</span></label>
+                    <input type="text" name="Designation" id="lea-desig" class="form-control" readonly required>
+                </div>
+                <div class="form-group">
+                    <label>Current Date & Day <span class="auto-badge">Auto</span></label>
+                    <div class="date-day-row" style="display: flex; gap: 10px;">
+                        <input type="text" name="Date" id="lea-date" class="form-control" readonly required>
+                        <input type="text" name="Day" id="lea-day" class="form-control" readonly required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Leave Type</label>
+                    <select name="LeaveType" class="form-control">
+                        <option value="Casual Leave">Casual Leave</option>
+                        <option value="Sick Leave">Sick Leave</option>
+                        <option value="Earned Leave">Earned Leave</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Reason for Leave</label>
+                    <input type="text" name="Reason" class="form-control" placeholder="Chutti ka kaaran likhein" required>
+                </div>
+                <button type="submit" class="btn" id="btn-lea-submit" style="background: linear-gradient(120deg, #b45309, #f59e0b);" disabled>Submit Leave Request</button>
+                <div class="loader" id="loader-lea">Application submit ho rhi hai...</div>
+            </form>
+        </div>
+
+    </div>
+
+    <div id="toast"></div>
+
+    <!-- FOOTER -->
+    <footer style="
+        background: linear-gradient(120deg, #0f172a, #1e3a8a);
+        color: #fff;
+        padding: 28px 20px 22px;
+        text-align: center;
+        margin-top: auto;
+    ">
+        <div style="
+            width: 56px; height: 56px; border-radius: 50%; margin: 0 auto 12px;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; font-weight: 800; color: #fff;
+            font-family: Poppins, sans-serif;
+            box-shadow: 0 4px 14px rgba(59,130,246,0.4);
+        ">S</div>
+
+        <p style="font-family: Poppins, sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 2px;">SACHIN KUMAR</p>
+        <p style="font-size: 12px; color: #94a3b8; margin-bottom: 16px;">Tech Head &nbsp;|&nbsp; KRATIVAN VALEROX</p>
+
+        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 18px;">
+
+            <!-- GitHub -->
+            <a href="https://github.com/your-username" target="_blank" style="
+                display: flex; align-items: center; gap: 6px;
+                background: rgba(255,255,255,0.08);
+                border: 1px solid rgba(255,255,255,0.12);
+                color: #fff; padding: 8px 14px; border-radius: 8px;
+                text-decoration: none; font-size: 12px; font-weight: 600;
+                transition: background 0.2s;
+            " onmouseover="this.style.background='rgba(255,255,255,0.16)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                GitHub
+            </a>
+
+            <!-- Instagram -->
+            <a href="https://instagram.com/your-username" target="_blank" style="
+                display: flex; align-items: center; gap: 6px;
+                background: linear-gradient(135deg, rgba(131,58,180,0.6), rgba(253,29,29,0.6), rgba(252,176,69,0.6));
+                border: 1px solid rgba(255,255,255,0.12);
+                color: #fff; padding: 8px 14px; border-radius: 8px;
+                text-decoration: none; font-size: 12px; font-weight: 600;
+                transition: opacity 0.2s;
+            " onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                Instagram
+            </a>
+
+            <!-- Portfolio -->
+            <a href="https://your-portfolio-website.com" target="_blank" style="
+                display: flex; align-items: center; gap: 6px;
+                background: rgba(59,130,246,0.25);
+                border: 1px solid rgba(59,130,246,0.35);
+                color: #93c5fd; padding: 8px 14px; border-radius: 8px;
+                text-decoration: none; font-size: 12px; font-weight: 600;
+                transition: background 0.2s;
+            " onmouseover="this.style.background='rgba(59,130,246,0.4)'" onmouseout="this.style.background='rgba(59,130,246,0.25)'">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0a12 12 0 100 24A12 12 0 0012 0zm-1 17.93V16h2v1.93A10.04 10.04 0 0121.93 13H20v-2h1.93A10.04 10.04 0 0113 2.07V4h-2V2.07A10.04 10.04 0 002.07 11H4v2H2.07A10.04 10.04 0 0011 21.93zM12 15a3 3 0 110-6 3 3 0 010 6z"/></svg>
+                Portfolio
+            </a>
+        </div>
+
+        <p style="font-size: 11px; color: #475569;">© 2026 KRATIVAN VALEROX · Built by Sachin</p>
+    </footer>
+
+    <script>
+        // ⚠️ DEPLOYED WEB APP URL IDHAR PASTE KAREIN
+        const API_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxQPgGaGtjodJSprU6w1LUVO_NEcNnpHUM5kBos_YdSEX4ln5jFc7vUdFI3LfFz-cIJ/exec';
+
+        let employeeDatabaseCache = [];
+        let activeFormElement     = null;
+        let activeActionType      = null;
+
+        // ── helper: buttons aur loaders reset karo ─────────────────────────
+        function resetUI() {
+            document.getElementById('btn-att-submit').disabled = false;
+            document.getElementById('btn-lea-submit').disabled = false;
+            document.getElementById('loader-att').style.display = 'none';
+            document.getElementById('loader-lea').style.display = 'none';
+        }
+
+        // ── 1. Employee list load karo (page load pe) ───────────────────────
+        function loadEmployeeDB() {
+            const s = document.createElement('script');
+            s.src = API_ENDPOINT + '?callback=onEmployeeDBLoaded';
+            document.body.appendChild(s);
+        }
+
+        function onEmployeeDBLoaded(res) {
+            const status = document.getElementById('sync-status');
+            if (res.success && Array.isArray(res.data)) {
+                employeeDatabaseCache = res.data;
+                status.innerText = '✅ Database Connected Successfully! Form ready for use.';
+                status.style.color = '#16a34a';
+                document.getElementById('btn-att-submit').disabled = false;
+                document.getElementById('btn-lea-submit').disabled = false;
+            } else {
+                status.innerText = '❌ Database load nahi hui: ' + (res.error || 'Unknown error');
+                status.style.color = '#dc2626';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadEmployeeDB);
+
+        // ── 2. Form submit — ALAG callback use karo ─────────────────────────
+        function submitDataJSONP(e, actionType) {
+            e.preventDefault();
+            activeFormElement = e.target;
+            activeActionType  = actionType;
+
+            document.getElementById('btn-att-submit').disabled = true;
+            document.getElementById('btn-lea-submit').disabled = true;
+            document.getElementById('loader-att').style.display = actionType === 'markAttendance' ? 'block' : 'none';
+            document.getElementById('loader-lea').style.display = actionType === 'applyLeave'     ? 'block' : 'none';
+
+            const formData = new FormData(activeFormElement);
+            let qs = '?callback=onFormSubmitResponse&action=' + actionType;
+            formData.forEach((val, key) => {
+                qs += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(val);
+            });
+
+            const s = document.createElement('script');
+            s.src = API_ENDPOINT + qs;
+            document.body.appendChild(s);
+        }
+
+        // ── 3. Submit response — success aur error dono clearly handle hote hain
+        function onFormSubmitResponse(res) {
+            resetUI();
+
+            if (res.success) {
+                // ✅ Kamiyaab — form reset karo aur success toast dikhao
+                showToast('✅ ' + res.message);
+                if (activeFormElement) {
+                    activeFormElement.reset();
+                    // Auto-fill fields bhi clear karo
+                    ['att-name','att-dept','att-desig','att-date','att-day'].forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) el.value = '';
+                    });
+                    ['lea-name','lea-dept','lea-desig','lea-date','lea-day'].forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) el.value = '';
+                    });
+                }
+                // Employee DB re-sync karo background mein
+                loadEmployeeDB();
+            } else {
+                // ❌ Error — toast dikhao, form mat reset karo
+                showToast('❌ ' + (res.error || 'Kuch galat ho gaya!'));
+            }
+        }
+
+        function autoFillEmployeeData(inputElement, viewMode) {
+            const empID = inputElement.value.trim();
+            const prefix = viewMode === 'attendance' ? 'att' : 'lea';
+
+            ['name','dept','desig','date','day'].forEach(f => {
+                document.getElementById(`${prefix}-${f}`).value = '';
+            });
+
+            if (!empID) return;
+
+            const match = employeeDatabaseCache.find(emp => {
+                let idKey = emp.EmployeeID || emp.Employeeid || Object.values(emp)[0];
+                return idKey && idKey.toString().trim().toLowerCase() === empID.toLowerCase();
+            });
+
+            if (match) {
+                document.getElementById(`${prefix}-name`).value  = match.Name || '';
+                document.getElementById(`${prefix}-dept`).value  = match.Department || '';
+                document.getElementById(`${prefix}-desig`).value = match.Designation || '';
+                const now = new Date();
+                const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+                document.getElementById(`${prefix}-date`).value = now.toISOString().split('T')[0];
+                document.getElementById(`${prefix}-day`).value  = days[now.getDay()];
+                showToast("✅ Details Autofilled!");
+            } else {
+                showToast("❌ Employee ID '" + empID + "' nahi mili!");
+            }
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`panel-${tab}`).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg; t.style.display = 'block';
+            setTimeout(() => { t.style.display = 'none'; }, 4000);
+        }
+    </script>
+</body>
+</html>
